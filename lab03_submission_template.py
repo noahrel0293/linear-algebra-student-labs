@@ -220,9 +220,9 @@ def runtime_comparison():
     sizes = [2**j for j in range(1, 8)]
     ge_times = np.zeros(7)
     lu_times = np.zeros(7)
-    def ge_timer(A, i):
+    def ge_timer(A, b, i):
         start = time.time()
-        gaussian_elimination(A)
+        gaussian_elimination(A, b)
         end = time.time()
         ge_times[i] = end-start
 
@@ -234,7 +234,8 @@ def runtime_comparison():
     
     for i in range(len(sizes)):
         A = np.random.randint(1, 10, (sizes[i], sizes[i]))
-        ge_timer(A, i)
+        b = np.random.randint(1, 10, (sizes[i], 1))
+        ge_timer(A, b, i)
         lu_timer(A, i)
 
     times_np = np.concatenate(ge_times, lu_times)
