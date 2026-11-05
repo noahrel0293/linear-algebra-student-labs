@@ -19,6 +19,8 @@ What you need to do:
 
 import numpy as np
 from scipy.sparse import diags
+import time
+from matplotlib import pyplot as plt
 
 
 def generate_safe_system(n):
@@ -81,6 +83,35 @@ def lu_factorisation(A):
     L, U = np.zeros_like(A, dtype=float), np.zeros_like(A, dtype=float)
 
     # TODO: fill in L and U
+
+    for i in range(n):
+        L[i][i] = 1
+
+    def U_Calc(i, j, A, U, L):
+        summationres = 0
+        for k in range(i):
+            summationres = summationres + (L[i][k] * U[k][j])
+        
+        ureturn = A[i][j] - summationres
+        return ureturn
+
+    def L_Calc(i, j, A, U, L):
+        summationres = 0
+        for k in range(j):
+            summationres = summationres + (L[i][k] * U[k][j])
+
+        lreturn = (A[i][j] - summationres) / U[j][j]
+        return lreturn
+    
+    for j in range(n):
+        U[0][j] = U_Calc(0, j, A, U, L)
+    
+    for i in range(1, n):
+        for j in range(i):
+            L[i][j] = L_Calc(i, j, A, U, L)
+        for j in range(n):
+            U[i][j] = U_Calc(i, j, A, U, L)
+
 
     return L, U
 
@@ -186,9 +217,30 @@ def runtime_comparison():
     # import time
     # from matplotlib import pyplot as plt
     #
-    # sizes = [2**j for j in range(1, 8)]
-    # ...
-    # plt.savefig("plot.png")
+    sizes = [2**j for j in range(1, 8)]
+    ge_times = np.zeros(7)
+    lu_times = np.zeros(7)
+    def ge_timer(A, i):
+        start = time.time()
+        gaussian_elimination(A)
+        end = time.time()
+        ge_times[i] = end-start
+
+    def lu_timer(A, i):
+            start = time.time()
+            lu_factorisation(A)
+            end = time.time()
+            lu_times[i] = end-start
+    
+    for i in range(len(sizes)):
+        A = np.random.randint(1, 10, (sizes[i], sizes[i]), dtype=float)
+        ge_timer(A, i)
+        lu_timer(A, i)
+
+    times_np = np.concatenate(ge_times, lu_times)
+    plt.loglog(sizes, ge_times, label="gaussian elimination times")
+    plt.loglog(sizes, lu_times, label="LU factorisation times")
+    plt.savefig("plot.png")
 
 
 if __name__ == "__main__":
