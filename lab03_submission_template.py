@@ -233,8 +233,8 @@ def runtime_comparison():
             lu_times[i] = end-start
     
     for i in range(len(sizes)):
-        A = np.random.randint(1, 10, (sizes[i], sizes[i]))
-        b = np.random.randint(1, 10, (sizes[i], 1))
+        A = np.random.uniform(1, 10, size=(sizes[i], sizes[i]))
+        b = np.random.uniform(1, 10, size=(sizes[i], 1))
         ge_timer(A, b, i)
         lu_timer(A, i)
 
