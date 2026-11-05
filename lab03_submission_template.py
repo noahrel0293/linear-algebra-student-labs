@@ -238,7 +238,6 @@ def runtime_comparison():
         ge_timer(A, b, i)
         lu_timer(A, i)
 
-    times_np = np.concatenate(ge_times, lu_times)
     plt.loglog(sizes, ge_times, label="gaussian elimination times")
     plt.loglog(sizes, lu_times, label="LU factorisation times")
     plt.savefig("plot.png")
